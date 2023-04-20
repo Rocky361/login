@@ -2,10 +2,7 @@ import java.sql.*;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -43,7 +40,8 @@ public class Main extends Application {
         Label regUsername = new Label("Name");
         Label regPassword = new Label("Password");
         TextField regUserTextfield = new TextField();
-        TextField regPassTextfield = new TextField();
+        PasswordField regPassTextfield = new PasswordField();
+
 
         GridPane gridPaneRegister = new GridPane();
 
@@ -104,12 +102,12 @@ public class Main extends Application {
     public GridPane createLoginPane(){
         // LOGIN
         //objekte erstellen
-        Button button1 = new Button("Submit");
-        Button button2 = new Button("Clear");
-        Label label1 = new Label("Username");
-        Label label2 = new Label("Password");
-        TextField textField1 = new TextField();
-        TextField textField2 = new TextField();
+        Button submitButton = new Button("Submit");
+        Button clearButton = new Button("Clear");
+        Label usernameLabel = new Label("Username");
+        Label passwordLabel = new Label("Password");
+        TextField usernameTF = new TextField();
+        PasswordField passwordTF = new PasswordField();
 
         //grid panel erstellen
         GridPane gridPaneLogin = new GridPane();
@@ -125,36 +123,36 @@ public class Main extends Application {
         gridPaneLogin.setAlignment(Pos.CENTER);
 
         // objekte ins grid einfügen
-        gridPaneLogin.add(label1, 0, 0);
-        gridPaneLogin.add(textField1, 1, 0);
-        gridPaneLogin.add(label2, 0, 1);
-        gridPaneLogin.add(textField2, 1, 1);
-        gridPaneLogin.add(button1, 0, 2);
-        gridPaneLogin.add(button2, 1, 2);
+        gridPaneLogin.add(usernameLabel, 0, 0);
+        gridPaneLogin.add(usernameTF, 1, 0);
+        gridPaneLogin.add(passwordLabel, 0, 1);
+        gridPaneLogin.add(passwordTF, 1, 1);
+        gridPaneLogin.add(submitButton, 0, 2);
+        gridPaneLogin.add(clearButton, 1, 2);
 
-        button1.setOnMouseClicked(f -> {
-            System.out.println(textField1.getText());
+        submitButton.setOnMouseClicked(f -> {
+            System.out.println(usernameTF.getText());
             try {
                 Connection con = DriverManager.getConnection(url, user, pass);
                 Statement stm = con.createStatement();
-                String abfrage = "SELECT * FROM tbl_member WHERE username='" + textField1.getText() + "'";
+                String abfrage = "SELECT * FROM tbl_member WHERE username='" + usernameTF.getText() + "'";
                 ResultSet rs = stm.executeQuery(abfrage);
                 if (rs.next()) {
-                    if (rs.getString("password").equals(textField2.getText())) {
+                    if (rs.getString("password").equals(passwordTF.getText())) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setHeaderText(null);
-                        alert.setContentText("Logged in!");
+                        alert.setContentText("Erfolgreich angemeldet!");
                         alert.showAndWait();
                     } else {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setHeaderText(null);
-                        alert.setContentText("Wrong Password");
+                        alert.setContentText("Benutzername oder Passwort falsch!");
                         alert.showAndWait();
                     }
                 } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText(null);
-                    alert.setContentText("Unknown User");
+                    alert.setContentText("Unbekannter Benutzername");
                     alert.showAndWait();
                 }
             } catch (SQLException e) {
@@ -162,9 +160,9 @@ public class Main extends Application {
             }
         });
 
-        button2.setOnMouseClicked(g -> {
-            textField1.setText("");
-            textField2.setText("");
+        clearButton.setOnMouseClicked(g -> {
+            usernameTF.setText("");
+            passwordTF.setText("");
         });
 
         return gridPaneLogin;
