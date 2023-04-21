@@ -24,24 +24,27 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
 
         // Create the login pane and scene
-        GridPane loginPane = createLoginPane();
+        GridPane loginPane = createLoginPane(primaryStage);
         Scene loginScene = new Scene(loginPane);
 
         // Create the registration pane and scene
         GridPane registerPane = createRegisterGridPane(primaryStage, loginScene);
         Scene registerScene = new Scene(registerPane);
 
+
+
         // Set the stage to display the registration scene
-        primaryStage.setTitle("Registrieren");
+
         primaryStage.setScene(registerScene);
         primaryStage.show();
     }
 
     // Create the registration pane and return it
     public GridPane createRegisterGridPane(Stage primaryStage, Scene loginScene) {
+        primaryStage.setTitle("Registrieren");
         // Create the registration form elements
         Button buttonRegister = new Button("Registrieren");
-        Button buttonRegistriert = new Button("Bin Registriert");
+        Button buttonRegistriert = new Button("zum Login");
         Label regUsername = new Label("Name");
         Label regPassword = new Label("Password");
         TextField regUserTextfield = new TextField();
@@ -101,12 +104,14 @@ public class Main extends Application {
             } catch (SQLException f) {
                 System.out.println(f.getMessage());
             }
+            primaryStage.setTitle("Login");
 
             primaryStage.setScene(loginScene);
         });
 
         // Button click event handler for buttonRegistriert
         buttonRegistriert.setOnMouseClicked(e -> {
+            primaryStage.setTitle("Login");
             primaryStage.setScene(loginScene);
         });
 
@@ -114,13 +119,13 @@ public class Main extends Application {
     }
 
 
-    public GridPane createLoginPane() {
+    public GridPane createLoginPane(Stage primaryStage) {
 
-        // LOGIN
 
         // Create UI elements
         Button submitButton = new Button("Submit");
         Button clearButton = new Button("Clear");
+        Button zurueckButton = new Button("zurück");
         Label usernameLabel = new Label("Username");
         Label passwordLabel = new Label("Password");
         TextField usernameTF = new TextField();
@@ -146,6 +151,7 @@ public class Main extends Application {
         gridPaneLogin.add(passwordTF, 1, 1);
         gridPaneLogin.add(submitButton, 0, 2);
         gridPaneLogin.add(clearButton, 1, 2);
+        gridPaneLogin.add(zurueckButton, 2, 2);
 
         // Event handler for submit button
         submitButton.setOnMouseClicked(f -> {
@@ -155,29 +161,24 @@ public class Main extends Application {
                 // Connect to database
                 Connection con = DriverManager.getConnection(url, user, pass);
                 Statement stm = con.createStatement();
-                // Execute SQL query to check if username exists
-                String abfrage = "SELECT * FROM tbl_member WHERE username='" + usernameTF.getText() + "'";
-                ResultSet rs = stm.executeQuery(abfrage);
-                if (rs.next()) {
-                    // If username exists, check password
-                    if (rs.getString("password").equals(passwordTF.getText())) {
-                        // If password is correct, show success alert
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setHeaderText(null);
-                        alert.setContentText("Erfolgreich angemeldet!");
-                        alert.showAndWait();
-                    } else {
-                        // If password is incorrect, show error alert
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setHeaderText(null);
-                        alert.setContentText("Benutzername oder Passwort falsch!");
-                        alert.showAndWait();
-                    }
-                } else {
-                    // If username does not exist, show error alert
+
+                // Check if username and password are valid
+                ResultSet rs = stm.executeQuery("SELECT COUNT(*) FROM tbl_member WHERE username = '" + usernameTF.getText() + "' AND password = '" + passwordTF.getText() + "'");
+                rs.next();
+                int count = rs.getInt(1);
+                if (count > 0) {
+                    System.out.println("Login successful!");
+                    // Display an alert to inform the user that login was successful
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText(null);
-                    alert.setContentText("Unbekannter Benutzername");
+                    alert.setContentText("Login successful!");
+                    alert.showAndWait();
+                } else {
+                    System.out.println("Invalid username or password!");
+                    // Display an alert to inform the user that the username or password is invalid
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Invalid username or password!");
                     alert.showAndWait();
                 }
             } catch (SQLException e) {
@@ -186,13 +187,18 @@ public class Main extends Application {
         });
 
         // Event handler for clear button
-        clearButton.setOnMouseClicked(g -> {
-            // Clear username and password text fields
-            usernameTF.setText("");
-            passwordTF.setText("");
+        clearButton.setOnMouseClicked(f -> {
+            // Clear the text fields
+            usernameTF.clear();
+            passwordTF.clear();
         });
 
-        // Return the grid panel
+        // Event handler for "zurück" button
+        zurueckButton.setOnMouseClicked(f -> {
+            start(primaryStage);
+        });
+
         return gridPaneLogin;
     }
+
 }
