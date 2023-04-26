@@ -96,7 +96,6 @@ public class Main extends Application {
                     // Display an alert to inform the user that registration was successful
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText(null);
-
                     alert.setContentText("Erfolgreich registriert!");
                     alert.showAndWait();
                 }
@@ -105,7 +104,6 @@ public class Main extends Application {
                 System.out.println(f.getMessage());
             }
             primaryStage.setTitle("Login");
-
             primaryStage.setScene(loginScene);
         });
 
@@ -120,7 +118,6 @@ public class Main extends Application {
 
 
     public GridPane createLoginPane(Stage primaryStage) {
-
 
         // Create UI elements
         Button submitButton = new Button("Submit");
@@ -194,9 +191,7 @@ public class Main extends Application {
         });
 
         // Event handler for "zurück" button
-        zurueckButton.setOnMouseClicked(f -> {
-            start(primaryStage);
-        });
+        zurueckButton.setOnMouseClicked(f -> start(primaryStage));
 
         return gridPaneLogin;
     }
