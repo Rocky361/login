@@ -69,6 +69,13 @@ public class Main extends Application {
         buttonRegister.setOnMouseClicked(e -> {
             // Get the username and password entered by the user
             username = regUserTextfield.getText();
+            if (username.length() < 3){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText(null);
+                alert.setContentText("Benutzername zu kurz! Mehr als 3 Zeichen!");
+                alert.showAndWait();
+                return;
+            }
             password = regPassTextfield.getText();
 
             try {
